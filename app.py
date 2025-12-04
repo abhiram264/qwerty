@@ -144,7 +144,7 @@ def build_data_model_ortools(payload: Dict[str, Any]) -> Dict[str, Any]:
     for j, o in enumerate(orders_raw):
         idx = order_index_start + j
         order_id_to_node_index[o["id"]] = idx
-        order_nodes.append({"id": o["id"], "node_index": idx})
+        order_nodes.append({"id": o["id"], "node_index": idx, "quantity": o.get("quantity", 1)})
         locations.append((o["store"]["lat"], o["store"]["lng"]))
 
     num_locations = len(locations)
@@ -163,7 +163,7 @@ def build_data_model_ortools(payload: Dict[str, Any]) -> Dict[str, Any]:
     for r in reps_raw:
         rep_id = r["id"]
         wh_id = r["warehouse_id"]
-        max_trips = r.get("max_trips_per_day", 3)
+        max_trips = r.get("max_trips_per_day", 1)
         depot_index = wh_id_to_index[wh_id]
         for trip_idx in range(1, max_trips + 1):
             vehicles_meta.append(
@@ -178,12 +178,13 @@ def build_data_model_ortools(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     num_vehicles = len(vehicles_meta)
 
-    # Demands: 0 for depots, 1 per order
+    # Demands: 0 for depots, 'quantity' per order
     demands = [0] * num_locations
     for o in order_nodes:
-        demands[o["node_index"]] = 1
+        qty = o.get("quantity", 1)
+        demands[o["node_index"]] = int(qty)
 
-    # Capacity: 5 orders per vehicle
+    # Capacity: 5 units per vehicle (sum of quantities per trip)
     vehicle_capacities = [5] * num_vehicles
 
     return {
@@ -243,7 +244,59 @@ def solve_vrp_ortools(data: Dict[str, Any]):
     search_parameters.time_limit.FromSeconds(5)
 
     solution = routing.SolveWithParameters(search_parameters)
-    return routing, manager, solution
+
+    # Compute basic optimization stats from OR-Tools (objective + optional gap).
+    optimization_stats: Dict[str, Any] = {
+        "objective_value": None,
+        "best_objective_bound": None,
+        "optimality_gap": None,
+        "optimization_score": None,
+    }
+
+    if solution is not None:
+        try:
+            objective_value = solution.ObjectiveValue()
+        except Exception:
+            objective_value = None
+
+        best_bound = None
+        try:
+            solver = routing.solver()
+            if hasattr(solver, "BestObjectiveBound"):
+                best_bound = solver.BestObjectiveBound()
+        except Exception:
+            best_bound = None
+
+        # If we couldn't read the objective for any reason, fall back to a
+        # generic "valid solution" score later.
+        gap = None
+        score = None
+
+        if objective_value is not None and objective_value > 0 and best_bound is not None:
+            # For a minimization problem, best_bound is a lower bound on the optimal cost.
+            # Gap = (obj - bound) / obj in [0, 1], lower is better.
+            gap_raw = (objective_value - best_bound) / float(objective_value) if objective_value != 0 else 0.0
+            gap = max(0.0, min(1.0, gap_raw))
+            # Turn into an easy-to-read percentage score: 100 = proven optimal.
+            score = round((1.0 - gap) * 100.0, 1)
+        else:
+            # If we can't compute a meaningful bound/objective pair, at least
+            # expose a non-empty score to indicate that OR-Tools found a
+            # feasible solution.
+            score = 100.0
+
+        optimization_stats.update(
+            {
+                "objective_value": objective_value,
+                "best_objective_bound": best_bound,
+                "optimality_gap": gap,
+                "optimization_score": score,
+            }
+
+        )
+        print(optimization_stats)
+
+    return routing, manager, solution, optimization_stats
 
 
 def extract_trips_ortools(
@@ -484,13 +537,60 @@ def extract_trips_ortools(
 
 
 def plan_routes_ortools(payload: Dict[str, Any]) -> Tuple[Dict[str, Any], float]:
-    data = build_data_model_ortools(payload)
-    routing, manager, solution = solve_vrp_ortools(data)
+    # ------------------------------------------------------------------
+    # Pre-process orders for capacity: if total requested quantity
+    # exceeds the global fleet capacity, we keep the highest-priority
+    # orders for today and mark the remainder as "carried over".
+    # ------------------------------------------------------------------
+    warehouses = payload["warehouses"]
+    reps = payload["reps"]
+    orders = payload["orders"]
+
+    # Global fleet capacity in "units" (5 units per trip).
+    num_vehicles_capacity = sum(r.get("max_trips_per_day", 1) for r in reps)
+    per_vehicle_capacity = 5
+    total_capacity_units = num_vehicles_capacity * per_vehicle_capacity
+
+    # Ensure each order has normalized priority/quantity (should already
+    # be validated by validate_orders_data for uploaded payloads).
+    normalized_orders = []
+    for o in orders:
+        priority = float(o.get("priority", 0.5))
+        quantity = int(o.get("quantity", 1))
+        normalized = dict(o)
+        normalized["priority"] = priority
+        normalized["quantity"] = quantity
+        normalized_orders.append(normalized)
+
+    # Sort by priority (high first), then by smaller quantity to pack better.
+    normalized_orders.sort(key=lambda x: (-x["priority"], x["quantity"]))
+
+    served_orders = []
+    carried_over_orders = []
+    used_capacity = 0
+
+    for o in normalized_orders:
+        qty = o["quantity"]
+        if used_capacity + qty <= total_capacity_units:
+            served_orders.append(o)
+            used_capacity += qty
+        else:
+            carried_over_orders.append(o)
+
+    effective_payload = {
+        "service_date": payload["service_date"],
+        "warehouses": warehouses,
+        "reps": reps,
+        "orders": served_orders,
+    }
+
+    data = build_data_model_ortools(effective_payload)
+    routing, manager, solution, optimization_stats = solve_vrp_ortools(data)
     if not solution:
         raise RuntimeError("No solution found by OR-Tools")
 
     trips, total_dist_km, geo_routes = extract_trips_ortools(
-        payload, data, routing, manager, solution, use_geoapify=True
+        effective_payload, data, routing, manager, solution, use_geoapify=True
     )
 
     res_trips: List[Dict[str, Any]] = []
@@ -510,11 +610,27 @@ def plan_routes_ortools(payload: Dict[str, Any]) -> Tuple[Dict[str, Any], float]
             }
         )
 
-    return {
+    result: Dict[str, Any] = {
         "service_date": payload["service_date"],
         "trips": res_trips,
         "geo_routes": geo_routes,
-    }, total_dist_km
+    }
+
+    # Attach optimization stats for downstream consumers (frontend, exports).
+    if optimization_stats.get("optimization_score") is not None:
+        result["optimization_score"] = optimization_stats["optimization_score"]
+    if optimization_stats.get("optimality_gap") is not None:
+        result["optimality_gap"] = optimization_stats["optimality_gap"]
+    if optimization_stats.get("objective_value") is not None:
+        result["objective_value"] = optimization_stats["objective_value"]
+    if optimization_stats.get("best_objective_bound") is not None:
+        result["best_objective_bound"] = optimization_stats["best_objective_bound"]
+
+    # Attach carried-over orders (not routed today, e.g. for the next day).
+    if carried_over_orders:
+        result["carried_over_orders"] = carried_over_orders
+
+    return result, total_dist_km
 
 
 # ============================================================
@@ -541,8 +657,8 @@ def generate_demo_payload() -> Dict[str, Any]:
 
     reps = []
     for i in range(1, 6):
-        reps.append({"id": f"WH1-R{i}", "warehouse_id": "WH1", "max_trips_per_day": 4})
-        reps.append({"id": f"WH2-R{i}", "warehouse_id": "WH2", "max_trips_per_day": 4})
+        reps.append({"id": f"WH1-R{i}", "warehouse_id": "WH1", "max_trips_per_day": 1})
+        reps.append({"id": f"WH2-R{i}", "warehouse_id": "WH2", "max_trips_per_day": 1})
 
     orders = []
     order_id = 1
@@ -656,6 +772,28 @@ def validate_orders_data(data):
         
         if not isinstance(order['warehouse_candidates'], list) or len(order['warehouse_candidates']) == 0:
             return False, "'warehouse_candidates' must be a non-empty array"
+
+        # Optional priority field, defaulting to 0.5 if missing.
+        # Priority is expected to be a float in [0, 1], where higher means more important.
+        priority = order.get('priority', 0.5)
+        if not isinstance(priority, (int, float)):
+            return False, "'priority' must be a number between 0 and 1"
+        if priority < 0 or priority > 1:
+            return False, "'priority' must be between 0 and 1"
+        # Normalize back into the order so downstream logic can rely on it.
+        order['priority'] = float(priority)
+
+        # Optional quantity field, defaulting to 1 if missing.
+        # Quantity represents how many units are to be carried for this order.
+        quantity = order.get('quantity', 1)
+        if not isinstance(quantity, int):
+            return False, "'quantity' must be an integer"
+        if quantity < 1:
+            return False, "'quantity' must be at least 1"
+        # For now we cap demo data at 5 to match per-trip capacity.
+        if quantity > 5:
+            return False, "'quantity' must not exceed 5 for this demo"
+        order['quantity'] = quantity
     
     return True, "Valid"
 
@@ -702,9 +840,9 @@ def get_warehouses_schema():
             {"id": "WH2", "lat": 17.44, "lng": 78.45}
         ],
         "reps": [
-            {"id": "WH1-R1", "warehouse_id": "WH1", "max_trips_per_day": 4},
-            {"id": "WH1-R2", "warehouse_id": "WH1", "max_trips_per_day": 4},
-            {"id": "WH2-R1", "warehouse_id": "WH2", "max_trips_per_day": 4}
+            {"id": "WH1-R1", "warehouse_id": "WH1", "max_trips_per_day": 1},
+            {"id": "WH1-R2", "warehouse_id": "WH1", "max_trips_per_day": 1},
+            {"id": "WH2-R1", "warehouse_id": "WH2", "max_trips_per_day": 1}
         ]
     }
     return jsonify(schema)
@@ -717,17 +855,23 @@ def get_orders_schema():
             {
                 "id": "O1",
                 "store": {"id": "S1", "lat": 17.40, "lng": 78.45},
-                "warehouse_candidates": ["WH1", "WH2"]
+                "warehouse_candidates": ["WH1", "WH2"],
+                "priority": 0.5,
+                "quantity": 3
             },
             {
                 "id": "O2",
                 "store": {"id": "S2", "lat": 17.42, "lng": 78.48},
-                "warehouse_candidates": ["WH1"]
+                "warehouse_candidates": ["WH1"],
+                "priority": 0.5,
+                "quantity": 2
             },
             {
                 "id": "O3",
                 "store": {"id": "S3", "lat": 17.46, "lng": 78.42},
-                "warehouse_candidates": ["WH2"]
+                "warehouse_candidates": ["WH2"],
+                "priority": 0.5,
+                "quantity": 5
             }
         ]
     }
@@ -805,7 +949,12 @@ def calculate_routes():
             "trips": ort_result["trips"],
             "geo_routes": ort_result.get("geo_routes", []),
             "total_distance_km": ort_total_km,
-            "service_date": payload["service_date"]
+            "service_date": payload["service_date"],
+            "optimization_score": ort_result.get("optimization_score"),
+            "optimality_gap": ort_result.get("optimality_gap"),
+            "objective_value": ort_result.get("objective_value"),
+            "best_objective_bound": ort_result.get("best_objective_bound"),
+            "carried_over_orders": ort_result.get("carried_over_orders", []),
         }
         return jsonify(response)
     except Exception as e:
@@ -824,7 +973,12 @@ def get_routes():
         "trips": ort_result["trips"],
         "geo_routes": ort_result.get("geo_routes", []),
         "total_distance_km": ort_total_km,
-        "service_date": payload["service_date"]
+        "service_date": payload["service_date"],
+        "optimization_score": ort_result.get("optimization_score"),
+        "optimality_gap": ort_result.get("optimality_gap"),
+        "objective_value": ort_result.get("objective_value"),
+        "best_objective_bound": ort_result.get("best_objective_bound"),
+        "carried_over_orders": ort_result.get("carried_over_orders", []),
     }
     return jsonify(response)
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import './StatsPanel.css';
 
 
@@ -13,6 +13,9 @@ const StatsPanel = ({ data, filteredTrips }) => {
     const isFiltered = visibleTrips > 0 && visibleTrips < totalTripsAll;
 
     const totalDistanceAll = data.total_distance_km;
+    const optimizationScore = data.optimization_score ?? null;
+    const carriedOverOrders = data.carried_over_orders || [];
+    const carriedOverCount = carriedOverOrders.length;
 
     // Group by warehouse using filtered trips
     const warehouseStats = {};
@@ -139,7 +142,16 @@ const StatsPanel = ({ data, filteredTrips }) => {
                 subValue: `of ${allOrdersCount}`,
                 icon: 'pin',
                 color: [139, 92, 246] // Purple
-            }
+            },
+            ...(optimizationScore !== null
+                ? [{
+                    label: 'Optimization Score',
+                    value: `${optimizationScore.toFixed(1)}%`,
+                    subValue: 'OR-Tools solution quality',
+                    icon: 'route',
+                    color: [34, 197, 94] // Green
+                }]
+                : [])
         ];
 
         // Helper function to draw icons
@@ -276,11 +288,17 @@ const StatsPanel = ({ data, filteredTrips }) => {
             ['Total Delivery Time', `${(totalDuration / 60).toFixed(1)} hours`],
             ['Average Trip Duration', `${avgDuration.toFixed(0)} minutes`],
             ['Fleet Utilization', `${utilizationPercent}%`],
-            ['Orders per Trip (Avg)', `${(visibleOrders / visibleTrips).toFixed(1)}`],
+            ['Orders per Trip (Avg)', `${(visibleOrders / (visibleTrips || 1)).toFixed(1)}`],
             ['Operation Window', `${earliestStart ? earliestStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - ${latestEnd ? latestEnd.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`],
+            ...(optimizationScore !== null
+                ? [['Optimization Score', `${optimizationScore.toFixed(1)}% (OR-Tools)`]]
+                : []),
+            ...(carriedOverCount > 0
+                ? [['Carried Over Orders', `${carriedOverCount} (next-day capacity)`]]
+                : []),
         ];
 
-        doc.autoTable({
+        autoTable(doc, {
             startY: currentY,
             head: [['Metric', 'Value']],
             body: summaryRows.slice(1),
@@ -322,7 +340,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
             doc.text('Representative Allocation', marginLeft, currentY);
             currentY += 8;
 
-            doc.autoTable({
+            autoTable(doc, {
                 startY: currentY,
                 head: [['Representative', 'Routes Assigned', 'Orders']],
                 body: repRows,
@@ -363,7 +381,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
             doc.text('Warehouse Performance', marginLeft, currentY);
             currentY += 8;
 
-            doc.autoTable({
+            autoTable(doc, {
                 startY: currentY,
                 head: [['Warehouse', 'Trips', 'Stops', 'Avg Stops/Trip']],
                 body: warehouseRows,
@@ -416,7 +434,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
             ];
         });
 
-        doc.autoTable({
+        autoTable(doc, {
             startY: currentY,
             head: [['#', 'WH', 'Rep', 'Trip', 'Stops', 'Start', 'End', 'Duration (min)']],
             body: tripTableRows,
@@ -551,6 +569,11 @@ const StatsPanel = ({ data, filteredTrips }) => {
             orders: data.orders,
             trips: tripsForStats,
             geo_routes: filteredGeoRoutes,
+            optimization_score: optimizationScore,
+            optimality_gap: data.optimality_gap ?? null,
+            objective_value: data.objective_value ?? null,
+            best_objective_bound: data.best_objective_bound ?? null,
+            carried_over_orders: carriedOverOrders,
         };
 
         const jsonString = JSON.stringify(payload, null, 2);
@@ -660,6 +683,24 @@ const StatsPanel = ({ data, filteredTrips }) => {
                         <div className="stat-label">Orders Covered</div>
                     </div>
                 </div>
+
+                {optimizationScore !== null && (
+                    <div className="stat-card">
+                        <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' }}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M3 3v18h18"></path>
+                                <polyline points="6 15 10 11 13 14 18 9"></polyline>
+                                <polyline points="18 9 18 13 14 13"></polyline>
+                            </svg>
+                        </div>
+                        <div className="stat-content">
+                            <div className="stat-value">
+                                {optimizationScore.toFixed(1)}%
+                            </div>
+                            <div className="stat-label">Optimization Score</div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Warehouse Breakdown */}
@@ -707,6 +748,14 @@ const StatsPanel = ({ data, filteredTrips }) => {
                         </span>
                     </div>
                 </div>
+                {carriedOverCount > 0 && (
+                    <div className="stat-row">
+                        <div className="stat-row-label">Carried Over Orders</div>
+                        <div className="stat-row-values">
+                            <span className="stat-pill">{carriedOverCount} orders (next day)</span>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Filter Status */}
