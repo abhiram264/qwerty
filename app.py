@@ -66,7 +66,9 @@ class Warehouse:
 class Rep:
     id: str
     warehouse_id: str
-    max_trips_per_day: int
+    max_trips_per_day: int  # Kept for backward compatibility, but not used for vehicle creation
+    shift_start_time: str = "09:00"  # Format: "HH:MM"
+    max_hours_per_day: int = 8  # Maximum working hours per day
 
 @dataclass
 class TripStop:
@@ -98,20 +100,36 @@ class DataStore:
             with open(self.wh_path, 'r') as f:
                 wh_data = json.load(f)
                 warehouses = [Warehouse(**d) for d in wh_data.get('warehouses', [])]
-                reps = [Rep(**d) for d in wh_data.get('reps', [])]
+                # Load reps with defaults for new fields
+                reps = []
+                for d in wh_data.get('reps', []):
+                    rep_dict = {
+                        'id': d['id'],
+                        'warehouse_id': d['warehouse_id'],
+                        'max_trips_per_day': d.get('max_trips_per_day', 4),  # Keep for backward compat
+                        'shift_start_time': d.get('shift_start_time', '09:00'),
+                        'max_hours_per_day': d.get('max_hours_per_day', 8)
+                    }
+                    reps.append(Rep(**rep_dict))
 
             with open(self.orders_path, 'r') as f:
                 orders_data = json.load(f)
                 # Ensure priority/quantity are set even if not in file
-                orders = [
-                    Order(
+                orders = []
+                for d in orders_data.get('orders', []):
+                    order = Order(
                         id=d['id'],
                         store=Store(**d['store']),
                         warehouse_candidates=d['warehouse_candidates'],
                         priority=float(d.get('priority', 0.5)),
                         quantity=int(d.get('quantity', 1))
-                    ) for d in orders_data.get('orders', [])
-                ]
+                    )
+                    # Preserve day and date fields if they exist (for filtering)
+                    if 'day' in d:
+                        order.day = d['day']
+                    if 'date' in d:
+                        order.date = d['date']
+                    orders.append(order)
             
             # Simple validation check
             if not all(o.warehouse_candidates for o in orders) or not (warehouses and reps):
@@ -133,7 +151,9 @@ class DataStore:
                     "store": {"id": o.store.id, "lat": o.store.lat, "lng": o.store.lng},
                     "warehouse_candidates": o.warehouse_candidates,
                     "priority": round(o.priority, 3), # Round for cleaner storage
-                    "quantity": o.quantity
+                    "quantity": o.quantity,
+                    **({"day": o.day} if hasattr(o, 'day') and o.day is not None else {}),  # Preserve day if exists
+                    **({"date": o.date} if hasattr(o, 'date') and o.date is not None else {})  # Preserve date if exists
                 } for o in orders
             ]
         }
@@ -152,6 +172,11 @@ class DataStore:
                 # Priority Aging: Increase priority by 0.1, capped at 1.0
                 new_priority = min(1.0, order.priority + 0.1)
                 order.priority = new_priority
+                # Remove date and day fields from carryovers so they're always included in future days
+                if hasattr(order, 'date'):
+                    delattr(order, 'date')
+                if hasattr(order, 'day'):
+                    delattr(order, 'day')
                 next_day_orders.append(order)
                 
         # Save the updated list (the carried-over orders) for the next day
@@ -194,6 +219,37 @@ def geoapify_route_leg(lat1: float, lng1: float, lat2: float, lng2: float) -> Di
 
 # ----------------- OR-Tools VRP Solver -----------------
 
+def split_large_orders(orders: List[Order]) -> List[Order]:
+    """
+    Split orders with quantity > 5 into multiple orders.
+    Each split order will have quantity <= 5 and share the same store location.
+    """
+    split_orders: List[Order] = []
+    max_quantity_per_order = 5
+    
+    for order in orders:
+        if order.quantity <= max_quantity_per_order:
+            split_orders.append(order)
+        else:
+            # Split into multiple orders
+            num_splits = (order.quantity + max_quantity_per_order - 1) // max_quantity_per_order
+            remaining_quantity = order.quantity
+            
+            for split_idx in range(num_splits):
+                split_qty = min(max_quantity_per_order, remaining_quantity)
+                split_order = Order(
+                    id=f"{order.id}_split_{split_idx + 1}",
+                    store=order.store,
+                    warehouse_candidates=order.warehouse_candidates,
+                    priority=order.priority,
+                    quantity=split_qty
+                )
+                split_orders.append(split_order)
+                remaining_quantity -= split_qty
+    
+    return split_orders
+
+# Build data model for OR-Tools with priority penalties for unserved orders and capacity constraints for each vehicle (trip).
 def build_data_model_ortools(
     warehouses: List[Warehouse], reps: List[Rep], orders: List[Order]
 ) -> Dict[str, Any]:
@@ -303,18 +359,26 @@ def build_data_model_ortools(
                 km = haversine_km(lat_i, lng_i, lat_j, lng_j)
                 distance_matrix[i][j] = int(round(km * 1000))
 
-    # 3. Vehicles
+    # 3. Vehicles - Create one vehicle per rep for their 8-hour shift
     vehicles_meta: List[Dict[str, Any]] = []
     for r in reps:
         depot_index = wh_id_to_index[r.warehouse_id]
-        for trip_idx in range(1, r.max_trips_per_day + 1):
+        # Create vehicles based on available time slots
+        # Each rep gets vehicles for their max_hours_per_day shift
+        # We'll create multiple vehicles per rep to allow multiple routes within the 8-hour window
+        # Using a conservative estimate: 1 vehicle per 2 hours of work
+        vehicles_per_rep = max(1, r.max_hours_per_day // 2)  # At least 1 vehicle, up to 4 for 8 hours
+        
+        for vehicle_idx in range(1, vehicles_per_rep + 1):
             vehicles_meta.append(
                 {
                     "rep_id": r.id,
                     "warehouse_id": r.warehouse_id,
-                    "trip_index_for_rep": trip_idx,
+                    "trip_index_for_rep": vehicle_idx,  # Keep for compatibility
                     "start_index": depot_index,
                     "end_index": depot_index,
+                    "shift_start_time": r.shift_start_time,
+                    "max_hours": r.max_hours_per_day,
                 }
             )
     num_vehicles = len(vehicles_meta)
@@ -354,6 +418,7 @@ def build_data_model_ortools(
         "penalties": penalties, # New: Penalties for OR-Tools
     }
 
+# Solve VRP with OR-Tools including priority penalties for unserved orders.
 def solve_vrp_ortools(data: Dict[str, Any]) -> Tuple[pywrapcp.RoutingModel, pywrapcp.RoutingIndexManager, Optional[pywrapcp.Assignment], Dict[str, Any]]:
     """Solves the VRP using OR-Tools, incorporating priority penalties."""
     num_locations = len(data["locations"])
@@ -387,7 +452,42 @@ def solve_vrp_ortools(data: Dict[str, Any]) -> Tuple[pywrapcp.RoutingModel, pywr
         "Capacity",
     )
     
-    # 3. Priority Penalty (New)
+    # 3. Time dimension - Enforce 8-hour shift limit per vehicle
+    # Convert distance to time (assuming average speed of 20 km/h = 0.333 km/min)
+    # Distance is in meters, so: time_minutes = distance_meters / 1000 / 0.333 = distance_meters * 0.003
+    # Service time per stop: 5 minutes
+    SERVICE_TIME_MINUTES = 5
+    AVG_SPEED_KMH = 20.0
+    METERS_PER_MINUTE = (AVG_SPEED_KMH * 1000) / 60.0  # ~333.33 meters per minute
+    
+    def time_callback(from_index: int, to_index: int) -> int:
+        """Returns time in minutes to travel from from_index to to_index."""
+        from_node = manager.IndexToNode(from_index)
+        to_node = manager.IndexToNode(to_index)
+        distance_meters = distance_matrix[from_node][to_node]
+        travel_minutes = int(round(distance_meters / METERS_PER_MINUTE))
+        # Add service time if destination is an order (not warehouse)
+        if to_node >= len(data["warehouse_id_to_index"]):  # It's an order node
+            return travel_minutes + SERVICE_TIME_MINUTES
+        return travel_minutes
+    
+    time_callback_index = routing.RegisterTransitCallback(time_callback)
+    
+    # Get max hours per vehicle (convert to minutes)
+    vehicle_max_times = []
+    for v in data["vehicle_meta"]:
+        max_hours = v.get("max_hours", 8)
+        vehicle_max_times.append(int(max_hours * 60))  # Convert to minutes
+    
+    routing.AddDimensionWithVehicleCapacity(
+        time_callback_index,
+        0,  # No slack
+        vehicle_max_times,  # Max time per vehicle in minutes
+        True,  # Start cumul to 0
+        "Time",
+    )
+    
+    # 4. Priority Penalty (New)
     penalties = data["penalties"]
     for node in data["order_nodes"]:
         node_index = manager.NodeToIndex(node["node_index"])
@@ -513,11 +613,20 @@ def extract_trips_ortools(
         wh_id = meta["warehouse_id"]
         rep_id = meta["rep_id"]
         trip_index_for_rep = meta["trip_index_for_rep"]
-
-        # Assume 9 AM start, with 2 hours gap between trips
+        
+        # Get shift start time from meta (format: "HH:MM")
+        shift_start_str = meta.get("shift_start_time", "09:00")
+        try:
+            shift_hour, shift_minute = map(int, shift_start_str.split(":"))
+        except (ValueError, AttributeError):
+            # Fallback to 9 AM if parsing fails
+            shift_hour, shift_minute = 9, 0
+        
+        # Start time based on shift_start_time, with small offset for multiple vehicles per rep
+        # Each vehicle for the same rep starts slightly offset (30 minutes apart)
         start_time = date_obj.replace(
-            hour=9, minute=0, second=0, microsecond=0
-        ) + timedelta(hours=(trip_index_for_rep - 1) * 2)
+            hour=shift_hour, minute=shift_minute, second=0, microsecond=0
+        ) + timedelta(minutes=(trip_index_for_rep - 1) * 30)
         current_time = start_time
         
         stops: List[TripStop] = []
@@ -583,17 +692,57 @@ def extract_trips_ortools(
 
 def plan_routes_daily(
     service_date: str,
-    datastore: DataStore
+    datastore: DataStore,
+    target_day: Optional[int] = None
 ) -> Tuple[Dict[str, Any], float]:
     """
     Main planning function. Loads orders, calculates capacity, solves VRP, 
     and updates carried-over orders.
+    
+    Args:
+        service_date: Date string in 'YYYY-MM-DD' format (used for filtering orders by date)
+        datastore: DataStore instance
+        target_day: Optional day number (1-7) for backward compatibility. 
+                   If service_date is provided, filters by date instead.
+                   Carryover orders (without date/day field) are always included.
     """
     # 1. Load Data
     warehouses, reps, orders = datastore.load_data()
     
-    # 2. Capacity Planning & Order Prioritization
-    num_vehicles_capacity = sum(r.max_trips_per_day for r in reps)
+    # Filter orders by service_date (date field) if provided, but always include carryovers
+    # Carryovers are orders without date or day field
+    new_orders = [o for o in orders if hasattr(o, 'date') or hasattr(o, 'day')]
+    carryover_orders = [o for o in orders if not (hasattr(o, 'date') or hasattr(o, 'day'))]
+    
+    if service_date:
+        # Filter new orders by service_date (prefer date field, fallback to day if date not available)
+        date_orders = []
+        for o in new_orders:
+            # Check if order has date field matching service_date
+            if hasattr(o, 'date') and getattr(o, 'date', None) == service_date:
+                date_orders.append(o)
+            # Fallback: if no date field but has day, calculate date from day
+            elif hasattr(o, 'day') and not hasattr(o, 'date'):
+                # This is for backward compatibility - we'll include it if day matches
+                # But ideally all orders should have date field
+                pass
+        
+        # Combine date-matched orders with carryovers
+        orders = date_orders + carryover_orders
+        print(f"Filtering for date {service_date}: {len(date_orders)} new orders + {len(carryover_orders)} carryover orders = {len(orders)} total")
+    elif target_day is not None:
+        # Fallback to day-based filtering for backward compatibility
+        day_orders = [o for o in new_orders if getattr(o, 'day', None) == target_day]
+        orders = day_orders + carryover_orders
+        print(f"Filtering for Day {target_day}: {len(day_orders)} new orders + {len(carryover_orders)} carryover orders = {len(orders)} total")
+    
+    # 2. Split orders with quantity > 5 into multiple orders
+    orders = split_large_orders(orders)
+    
+    # 3. Capacity Planning & Order Prioritization
+    # Calculate capacity based on vehicles per rep (vehicles_per_rep = max_hours_per_day // 2)
+    # Each vehicle can handle 5 units, and we have multiple vehicles per rep
+    num_vehicles_capacity = sum(max(1, r.max_hours_per_day // 2) for r in reps)
     per_vehicle_capacity = 5
     total_capacity_units = num_vehicles_capacity * per_vehicle_capacity
 
@@ -664,6 +813,7 @@ def plan_routes_daily(
 
     result: Dict[str, Any] = {
         "service_date": service_date,
+        "day": target_day,  # Include day in response
         "warehouses": [wh.__dict__ for wh in warehouses],
         "orders": [o.__dict__ for o in final_served_orders],
         "trips": res_trips,
@@ -744,16 +894,23 @@ def upload_orders():
 @app.route("/api/calculate-routes", methods=["POST"])
 def calculate_routes_api():
     """
-    Main API endpoint. Calculates routes for a specified day, 
+    Main API endpoint. Calculates routes for a specified date, 
     persists carried-over orders, and updates their priority.
+    
+    Request body can include:
+    - service_date: Date string in 'YYYY-MM-DD' format (defaults to today)
+                   This is used to filter orders by their 'date' field.
+                   Orders matching this date will be processed along with any carryover orders.
+    - day: Optional day number (1-7) for backward compatibility
     """
     try:
         request_data = request.get_json() or {}
         # Allows for explicit date or defaults to today's date in 'YYYY-MM-DD'
         service_date = request_data.get('service_date', datetime.now().strftime('%Y-%m-%d'))
+        target_day = request_data.get('day')  # Optional day filter (1-7)
         
         # The core planning logic is encapsulated here:
-        result, _ = plan_routes_daily(service_date, data_store)
+        result, _ = plan_routes_daily(service_date, data_store, target_day=target_day)
         
         # The response already contains all necessary information including the 
         # carried_over_orders and the total_distance_km.

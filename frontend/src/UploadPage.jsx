@@ -103,11 +103,23 @@ const UploadPage = () => {
       return;
     }
 
-    // Calculate routes
+    // Calculate routes - Start with first date from orders (if available) or today
     setCalculating(true);
     try {
+      // Try to get the earliest date from orders, or use today
+      let startDate = new Date().toISOString().split('T')[0];
+      if (ordersData?.orders && ordersData.orders.length > 0) {
+        const dates = ordersData.orders
+          .map(o => o.date)
+          .filter(d => d)
+          .sort();
+        if (dates.length > 0) {
+          startDate = dates[0]; // Use earliest date
+        }
+      }
+      
       const response = await axios.post('http://localhost:5000/api/calculate-routes', {
-        service_date: new Date().toISOString().split('T')[0]
+        service_date: startDate
       });
       
       // Navigate to results page with data

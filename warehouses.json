@@ -23,42 +23,12 @@
       "max_trips_per_day": 4
     },
     {
-      "id": "WH1-R3",
-      "warehouse_id": "WH1",
-      "max_trips_per_day": 4
-    },
-    {
-      "id": "WH1-R4",
-      "warehouse_id": "WH1",
-      "max_trips_per_day": 4
-    },
-    {
-      "id": "WH1-R5",
-      "warehouse_id": "WH1",
-      "max_trips_per_day": 4
-    },
-    {
       "id": "WH2-R1",
       "warehouse_id": "WH2",
       "max_trips_per_day": 4
     },
     {
       "id": "WH2-R2",
-      "warehouse_id": "WH2",
-      "max_trips_per_day": 4
-    },
-    {
-      "id": "WH2-R3",
-      "warehouse_id": "WH2",
-      "max_trips_per_day": 4
-    },
-    {
-      "id": "WH2-R4",
-      "warehouse_id": "WH2",
-      "max_trips_per_day": 4
-    },
-    {
-      "id": "WH2-R5",
       "warehouse_id": "WH2",
       "max_trips_per_day": 4
     }

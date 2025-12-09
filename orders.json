@@ -1,46 +1,20 @@
 {
   "orders": [
     {
-      "id": "O1",
+      "id": "O94",
       "store": {
-        "id": "S1",
-        "lat": 17.505,
-        "lng": 78.395
+        "id": "S94",
+        "lat": 17.305,
+        "lng": 78.475
       },
       "warehouse_candidates": [
         "WH1",
         "WH2"
       ],
-      "priority": 0.5,
-      "quantity": 2
-    },
-    {
-      "id": "O2",
-      "store": {
-        "id": "S2",
-        "lat": 17.498,
-        "lng": 78.407
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5,
-      "quantity": 2
-    },
-    {
-      "id": "O3",
-      "store": {
-        "id": "S3",
-        "lat": 17.487,
-        "lng": 78.382
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5,
-      "quantity": 2
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 1,
+      "date": "2025-12-21"
     },
     {
       "id": "O4",
@@ -53,1220 +27,10 @@
         "WH1",
         "WH2"
       ],
-      "priority": 0.5,
-      "quantity": 2
-    },
-    {
-      "id": "O5",
-      "store": {
-        "id": "S5",
-        "lat": 17.512,
-        "lng": 78.41
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5,
-      "quantity": 2
-    },
-    {
-      "id": "O6",
-      "store": {
-        "id": "S6",
-        "lat": 17.48,
-        "lng": 78.4
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5,
-      "quantity": 2
-    },
-    {
-      "id": "O7",
-      "store": {
-        "id": "S7",
-        "lat": 17.475,
-        "lng": 78.415
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5,
-      "quantity": 2
-    },
-    {
-      "id": "O8",
-      "store": {
-        "id": "S8",
-        "lat": 17.468,
-        "lng": 78.39
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O9",
-      "store": {
-        "id": "S9",
-        "lat": 17.462,
-        "lng": 78.405
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O10",
-      "store": {
-        "id": "S10",
-        "lat": 17.455,
-        "lng": 78.418
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O11",
-      "store": {
-        "id": "S11",
-        "lat": 17.52,
-        "lng": 78.38
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O12",
-      "store": {
-        "id": "S12",
-        "lat": 17.528,
-        "lng": 78.395
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O13",
-      "store": {
-        "id": "S13",
-        "lat": 17.532,
-        "lng": 78.41
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O14",
-      "store": {
-        "id": "S14",
-        "lat": 17.538,
-        "lng": 78.425
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O15",
-      "store": {
-        "id": "S15",
-        "lat": 17.525,
-        "lng": 78.438
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O16",
-      "store": {
-        "id": "S16",
-        "lat": 17.51,
-        "lng": 78.43
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O17",
-      "store": {
-        "id": "S17",
-        "lat": 17.498,
-        "lng": 78.445
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O18",
-      "store": {
-        "id": "S18",
-        "lat": 17.485,
-        "lng": 78.452
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O19",
-      "store": {
-        "id": "S19",
-        "lat": 17.475,
-        "lng": 78.438
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O20",
-      "store": {
-        "id": "S20",
-        "lat": 17.468,
-        "lng": 78.425
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O21",
-      "store": {
-        "id": "S21",
-        "lat": 17.46,
-        "lng": 78.44
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O22",
-      "store": {
-        "id": "S22",
-        "lat": 17.452,
-        "lng": 78.452
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O23",
-      "store": {
-        "id": "S23",
-        "lat": 17.445,
-        "lng": 78.437
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O24",
-      "store": {
-        "id": "S24",
-        "lat": 17.438,
-        "lng": 78.422
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O25",
-      "store": {
-        "id": "S25",
-        "lat": 17.43,
-        "lng": 78.41
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O26",
-      "store": {
-        "id": "S26",
-        "lat": 17.425,
-        "lng": 78.395
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O27",
-      "store": {
-        "id": "S27",
-        "lat": 17.418,
-        "lng": 78.38
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O28",
-      "store": {
-        "id": "S28",
-        "lat": 17.41,
-        "lng": 78.392
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O29",
-      "store": {
-        "id": "S29",
-        "lat": 17.405,
-        "lng": 78.405
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O30",
-      "store": {
-        "id": "S30",
-        "lat": 17.398,
-        "lng": 78.42
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O31",
-      "store": {
-        "id": "S31",
-        "lat": 17.392,
-        "lng": 78.435
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O32",
-      "store": {
-        "id": "S32",
-        "lat": 17.385,
-        "lng": 78.448
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O33",
-      "store": {
-        "id": "S33",
-        "lat": 17.378,
-        "lng": 78.462
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O34",
-      "store": {
-        "id": "S34",
-        "lat": 17.372,
-        "lng": 78.475
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O35",
-      "store": {
-        "id": "S35",
-        "lat": 17.365,
-        "lng": 78.488
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O36",
-      "store": {
-        "id": "S36",
-        "lat": 17.36,
-        "lng": 78.5
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O37",
-      "store": {
-        "id": "S37",
-        "lat": 17.355,
-        "lng": 78.515
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O38",
-      "store": {
-        "id": "S38",
-        "lat": 17.35,
-        "lng": 78.53
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O39",
-      "store": {
-        "id": "S39",
-        "lat": 17.345,
-        "lng": 78.545
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O40",
-      "store": {
-        "id": "S40",
-        "lat": 17.34,
-        "lng": 78.56
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O41",
-      "store": {
-        "id": "S41",
-        "lat": 17.335,
-        "lng": 78.575
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O42",
-      "store": {
-        "id": "S42",
-        "lat": 17.33,
-        "lng": 78.59
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O43",
-      "store": {
-        "id": "S43",
-        "lat": 17.325,
-        "lng": 78.605
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O44",
-      "store": {
-        "id": "S44",
-        "lat": 17.32,
-        "lng": 78.618
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O45",
-      "store": {
-        "id": "S45",
-        "lat": 17.315,
-        "lng": 78.632
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O46",
-      "store": {
-        "id": "S46",
-        "lat": 17.31,
-        "lng": 78.645
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O47",
-      "store": {
-        "id": "S47",
-        "lat": 17.305,
-        "lng": 78.66
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O48",
-      "store": {
-        "id": "S48",
-        "lat": 17.3,
-        "lng": 78.675
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O49",
-      "store": {
-        "id": "S49",
-        "lat": 17.295,
-        "lng": 78.69
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O50",
-      "store": {
-        "id": "S50",
-        "lat": 17.29,
-        "lng": 78.705
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O51",
-      "store": {
-        "id": "S51",
-        "lat": 17.52,
-        "lng": 78.42
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O52",
-      "store": {
-        "id": "S52",
-        "lat": 17.515,
-        "lng": 78.435
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O53",
-      "store": {
-        "id": "S53",
-        "lat": 17.51,
-        "lng": 78.45
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O54",
-      "store": {
-        "id": "S54",
-        "lat": 17.505,
-        "lng": 78.465
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O55",
-      "store": {
-        "id": "S55",
-        "lat": 17.5,
-        "lng": 78.48
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O56",
-      "store": {
-        "id": "S56",
-        "lat": 17.495,
-        "lng": 78.495
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O57",
-      "store": {
-        "id": "S57",
-        "lat": 17.49,
-        "lng": 78.51
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O58",
-      "store": {
-        "id": "S58",
-        "lat": 17.485,
-        "lng": 78.525
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O59",
-      "store": {
-        "id": "S59",
-        "lat": 17.48,
-        "lng": 78.54
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O60",
-      "store": {
-        "id": "S60",
-        "lat": 17.475,
-        "lng": 78.555
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O61",
-      "store": {
-        "id": "S61",
-        "lat": 17.47,
-        "lng": 78.57
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O62",
-      "store": {
-        "id": "S62",
-        "lat": 17.465,
-        "lng": 78.585
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O63",
-      "store": {
-        "id": "S63",
-        "lat": 17.46,
-        "lng": 78.6
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O64",
-      "store": {
-        "id": "S64",
-        "lat": 17.455,
-        "lng": 78.615
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O65",
-      "store": {
-        "id": "S65",
-        "lat": 17.45,
-        "lng": 78.63
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O66",
-      "store": {
-        "id": "S66",
-        "lat": 17.445,
-        "lng": 78.645
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O67",
-      "store": {
-        "id": "S67",
-        "lat": 17.44,
-        "lng": 78.66
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O68",
-      "store": {
-        "id": "S68",
-        "lat": 17.435,
-        "lng": 78.675
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O69",
-      "store": {
-        "id": "S69",
-        "lat": 17.43,
-        "lng": 78.69
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O70",
-      "store": {
-        "id": "S70",
-        "lat": 17.425,
-        "lng": 78.705
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O71",
-      "store": {
-        "id": "S71",
-        "lat": 17.42,
-        "lng": 78.45
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O72",
-      "store": {
-        "id": "S72",
-        "lat": 17.415,
-        "lng": 78.465
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O73",
-      "store": {
-        "id": "S73",
-        "lat": 17.41,
-        "lng": 78.48
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O74",
-      "store": {
-        "id": "S74",
-        "lat": 17.405,
-        "lng": 78.495
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O75",
-      "store": {
-        "id": "S75",
-        "lat": 17.4,
-        "lng": 78.51
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O76",
-      "store": {
-        "id": "S76",
-        "lat": 17.395,
-        "lng": 78.525
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O77",
-      "store": {
-        "id": "S77",
-        "lat": 17.39,
-        "lng": 78.54
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O78",
-      "store": {
-        "id": "S78",
-        "lat": 17.385,
-        "lng": 78.555
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O79",
-      "store": {
-        "id": "S79",
-        "lat": 17.38,
-        "lng": 78.57
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O80",
-      "store": {
-        "id": "S80",
-        "lat": 17.375,
-        "lng": 78.585
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O81",
-      "store": {
-        "id": "S81",
-        "lat": 17.37,
-        "lng": 78.42
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O82",
-      "store": {
-        "id": "S82",
-        "lat": 17.365,
-        "lng": 78.435
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O83",
-      "store": {
-        "id": "S83",
-        "lat": 17.36,
-        "lng": 78.45
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O84",
-      "store": {
-        "id": "S84",
-        "lat": 17.355,
-        "lng": 78.465
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O85",
-      "store": {
-        "id": "S85",
-        "lat": 17.35,
-        "lng": 78.48
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O86",
-      "store": {
-        "id": "S86",
-        "lat": 17.345,
-        "lng": 78.495
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O87",
-      "store": {
-        "id": "S87",
-        "lat": 17.34,
-        "lng": 78.51
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O88",
-      "store": {
-        "id": "S88",
-        "lat": 17.335,
-        "lng": 78.525
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O89",
-      "store": {
-        "id": "S89",
-        "lat": 17.33,
-        "lng": 78.54
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O90",
-      "store": {
-        "id": "S90",
-        "lat": 17.325,
-        "lng": 78.555
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O91",
-      "store": {
-        "id": "S91",
-        "lat": 17.32,
-        "lng": 78.43
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O92",
-      "store": {
-        "id": "S92",
-        "lat": 17.315,
-        "lng": 78.445
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O93",
-      "store": {
-        "id": "S93",
-        "lat": 17.31,
-        "lng": 78.46
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O94",
-      "store": {
-        "id": "S94",
-        "lat": 17.305,
-        "lng": 78.475
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O95",
-      "store": {
-        "id": "S95",
-        "lat": 17.3,
-        "lng": 78.49
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O96",
-      "store": {
-        "id": "S96",
-        "lat": 17.295,
-        "lng": 78.505
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
-    },
-    {
-      "id": "O97",
-      "store": {
-        "id": "S97",
-        "lat": 17.29,
-        "lng": 78.52
-      },
-      "warehouse_candidates": [
-        "WH1",
-        "WH2"
-      ],
-      "priority": 0.5
+      "priority": 0.6,
+      "quantity": 2,
+      "day": 1,
+      "date": "2025-12-15"
     },
     {
       "id": "O98",
@@ -1279,20 +43,378 @@
         "WH1",
         "WH2"
       ],
-      "priority": 0.5
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 1,
+      "date": "2025-12-21"
     },
     {
-      "id": "O99",
+      "id": "O80",
       "store": {
-        "id": "S99",
-        "lat": 17.28,
-        "lng": 78.55
+        "id": "S80",
+        "lat": 17.375,
+        "lng": 78.585
       },
       "warehouse_candidates": [
         "WH1",
         "WH2"
       ],
-      "priority": 0.5
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 1,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O24",
+      "store": {
+        "id": "S24",
+        "lat": 17.438,
+        "lng": 78.422
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 4,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O27",
+      "store": {
+        "id": "S27",
+        "lat": 17.418,
+        "lng": 78.38
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 1,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O88",
+      "store": {
+        "id": "S88",
+        "lat": 17.335,
+        "lng": 78.525
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 4,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O2",
+      "store": {
+        "id": "S2",
+        "lat": 17.498,
+        "lng": 78.407
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "quantity": 1,
+      "day": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O55",
+      "store": {
+        "id": "S55",
+        "lat": 17.5,
+        "lng": 78.48
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 2,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O47",
+      "store": {
+        "id": "S47",
+        "lat": 17.305,
+        "lng": 78.66
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 2,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O8",
+      "store": {
+        "id": "S8",
+        "lat": 17.468,
+        "lng": 78.39
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O49",
+      "store": {
+        "id": "S49",
+        "lat": 17.295,
+        "lng": 78.69
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 2,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O87",
+      "store": {
+        "id": "S87",
+        "lat": 17.34,
+        "lng": 78.51
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 2,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O70",
+      "store": {
+        "id": "S70",
+        "lat": 17.425,
+        "lng": 78.705
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 3,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O35",
+      "store": {
+        "id": "S35",
+        "lat": 17.365,
+        "lng": 78.488
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 4,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O61",
+      "store": {
+        "id": "S61",
+        "lat": 17.47,
+        "lng": 78.57
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 4,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O9",
+      "store": {
+        "id": "S9",
+        "lat": 17.462,
+        "lng": 78.405
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 4,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O5",
+      "store": {
+        "id": "S5",
+        "lat": 17.512,
+        "lng": 78.41
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "quantity": 2,
+      "day": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O53",
+      "store": {
+        "id": "S53",
+        "lat": 17.51,
+        "lng": 78.45
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 1,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O90",
+      "store": {
+        "id": "S90",
+        "lat": 17.325,
+        "lng": 78.555
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 3,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O65",
+      "store": {
+        "id": "S65",
+        "lat": 17.45,
+        "lng": 78.63
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 2,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O26",
+      "store": {
+        "id": "S26",
+        "lat": 17.425,
+        "lng": 78.395
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 2,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O84",
+      "store": {
+        "id": "S84",
+        "lat": 17.355,
+        "lng": 78.465
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 2,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O73",
+      "store": {
+        "id": "S73",
+        "lat": 17.41,
+        "lng": 78.48
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 4,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O60",
+      "store": {
+        "id": "S60",
+        "lat": 17.475,
+        "lng": 78.555
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 4,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O12",
+      "store": {
+        "id": "S12",
+        "lat": 17.528,
+        "lng": 78.395
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 1,
+      "date": "2025-12-15"
     },
     {
       "id": "O100",
@@ -1305,7 +427,1196 @@
         "WH1",
         "WH2"
       ],
-      "priority": 0.5
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 1,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O86",
+      "store": {
+        "id": "S86",
+        "lat": 17.345,
+        "lng": 78.495
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 3,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O39",
+      "store": {
+        "id": "S39",
+        "lat": 17.345,
+        "lng": 78.545
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 2,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O72",
+      "store": {
+        "id": "S72",
+        "lat": 17.415,
+        "lng": 78.465
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 2,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O56",
+      "store": {
+        "id": "S56",
+        "lat": 17.495,
+        "lng": 78.495
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 2,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O13",
+      "store": {
+        "id": "S13",
+        "lat": 17.532,
+        "lng": 78.41
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O40",
+      "store": {
+        "id": "S40",
+        "lat": 17.34,
+        "lng": 78.56
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 1,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O28",
+      "store": {
+        "id": "S28",
+        "lat": 17.41,
+        "lng": 78.392
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 1,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O97",
+      "store": {
+        "id": "S97",
+        "lat": 17.29,
+        "lng": 78.52
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 4,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O46",
+      "store": {
+        "id": "S46",
+        "lat": 17.31,
+        "lng": 78.645
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 1,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O83",
+      "store": {
+        "id": "S83",
+        "lat": 17.36,
+        "lng": 78.45
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 2,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O67",
+      "store": {
+        "id": "S67",
+        "lat": 17.44,
+        "lng": 78.66
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 1,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O81",
+      "store": {
+        "id": "S81",
+        "lat": 17.37,
+        "lng": 78.42
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 1,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O44",
+      "store": {
+        "id": "S44",
+        "lat": 17.32,
+        "lng": 78.618
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 1,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O22",
+      "store": {
+        "id": "S22",
+        "lat": 17.452,
+        "lng": 78.452
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 3,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O95",
+      "store": {
+        "id": "S95",
+        "lat": 17.3,
+        "lng": 78.49
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 1,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O52",
+      "store": {
+        "id": "S52",
+        "lat": 17.515,
+        "lng": 78.435
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 1,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O41",
+      "store": {
+        "id": "S41",
+        "lat": 17.335,
+        "lng": 78.575
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 4,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O42",
+      "store": {
+        "id": "S42",
+        "lat": 17.33,
+        "lng": 78.59
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 2,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O1",
+      "store": {
+        "id": "S1",
+        "lat": 17.505,
+        "lng": 78.395
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "quantity": 2,
+      "day": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O48",
+      "store": {
+        "id": "S48",
+        "lat": 17.3,
+        "lng": 78.675
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 4,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O14",
+      "store": {
+        "id": "S14",
+        "lat": 17.538,
+        "lng": 78.425
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 3,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O74",
+      "store": {
+        "id": "S74",
+        "lat": 17.405,
+        "lng": 78.495
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 1,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O15",
+      "store": {
+        "id": "S15",
+        "lat": 17.525,
+        "lng": 78.438
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 3,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O68",
+      "store": {
+        "id": "S68",
+        "lat": 17.435,
+        "lng": 78.675
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 3,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O30",
+      "store": {
+        "id": "S30",
+        "lat": 17.398,
+        "lng": 78.42
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 2,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O50",
+      "store": {
+        "id": "S50",
+        "lat": 17.29,
+        "lng": 78.705
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 1,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O76",
+      "store": {
+        "id": "S76",
+        "lat": 17.395,
+        "lng": 78.525
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 1,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O36",
+      "store": {
+        "id": "S36",
+        "lat": 17.36,
+        "lng": 78.5
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 4,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O34",
+      "store": {
+        "id": "S34",
+        "lat": 17.372,
+        "lng": 78.475
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 3,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O91",
+      "store": {
+        "id": "S91",
+        "lat": 17.32,
+        "lng": 78.43
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 4,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O45",
+      "store": {
+        "id": "S45",
+        "lat": 17.315,
+        "lng": 78.632
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 1,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O93",
+      "store": {
+        "id": "S93",
+        "lat": 17.31,
+        "lng": 78.46
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 1,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O92",
+      "store": {
+        "id": "S92",
+        "lat": 17.315,
+        "lng": 78.445
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 1,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O69",
+      "store": {
+        "id": "S69",
+        "lat": 17.43,
+        "lng": 78.69
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 4,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O51",
+      "store": {
+        "id": "S51",
+        "lat": 17.52,
+        "lng": 78.42
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 2,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O71",
+      "store": {
+        "id": "S71",
+        "lat": 17.42,
+        "lng": 78.45
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 1,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O78",
+      "store": {
+        "id": "S78",
+        "lat": 17.385,
+        "lng": 78.555
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 3,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O3",
+      "store": {
+        "id": "S3",
+        "lat": 17.487,
+        "lng": 78.382
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "quantity": 2,
+      "day": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O77",
+      "store": {
+        "id": "S77",
+        "lat": 17.39,
+        "lng": 78.54
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 2,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O25",
+      "store": {
+        "id": "S25",
+        "lat": 17.43,
+        "lng": 78.41
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 3,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O20",
+      "store": {
+        "id": "S20",
+        "lat": 17.468,
+        "lng": 78.425
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 2,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O99",
+      "store": {
+        "id": "S99",
+        "lat": 17.28,
+        "lng": 78.55
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 4,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O66",
+      "store": {
+        "id": "S66",
+        "lat": 17.445,
+        "lng": 78.645
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 4,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O79",
+      "store": {
+        "id": "S79",
+        "lat": 17.38,
+        "lng": 78.57
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 2,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O64",
+      "store": {
+        "id": "S64",
+        "lat": 17.455,
+        "lng": 78.615
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 1,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O43",
+      "store": {
+        "id": "S43",
+        "lat": 17.325,
+        "lng": 78.605
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 4,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O89",
+      "store": {
+        "id": "S89",
+        "lat": 17.33,
+        "lng": 78.54
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 2,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O31",
+      "store": {
+        "id": "S31",
+        "lat": 17.392,
+        "lng": 78.435
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 3,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O38",
+      "store": {
+        "id": "S38",
+        "lat": 17.35,
+        "lng": 78.53
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 4,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O33",
+      "store": {
+        "id": "S33",
+        "lat": 17.378,
+        "lng": 78.462
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 2,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O29",
+      "store": {
+        "id": "S29",
+        "lat": 17.405,
+        "lng": 78.405
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 2,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O7",
+      "store": {
+        "id": "S7",
+        "lat": 17.475,
+        "lng": 78.415
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "quantity": 2,
+      "day": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O21",
+      "store": {
+        "id": "S21",
+        "lat": 17.46,
+        "lng": 78.44
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 1,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O57",
+      "store": {
+        "id": "S57",
+        "lat": 17.49,
+        "lng": 78.51
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 3,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O59",
+      "store": {
+        "id": "S59",
+        "lat": 17.48,
+        "lng": 78.54
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 3,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O82",
+      "store": {
+        "id": "S82",
+        "lat": 17.365,
+        "lng": 78.435
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 3,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O23",
+      "store": {
+        "id": "S23",
+        "lat": 17.445,
+        "lng": 78.437
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 3,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O96",
+      "store": {
+        "id": "S96",
+        "lat": 17.295,
+        "lng": 78.505
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 7,
+      "quantity": 2,
+      "date": "2025-12-21"
+    },
+    {
+      "id": "O19",
+      "store": {
+        "id": "S19",
+        "lat": 17.475,
+        "lng": 78.438
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 4,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O10",
+      "store": {
+        "id": "S10",
+        "lat": 17.455,
+        "lng": 78.418
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O85",
+      "store": {
+        "id": "S85",
+        "lat": 17.35,
+        "lng": 78.48
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 1,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O63",
+      "store": {
+        "id": "S63",
+        "lat": 17.46,
+        "lng": 78.6
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 1,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O17",
+      "store": {
+        "id": "S17",
+        "lat": 17.498,
+        "lng": 78.445
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 1,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O54",
+      "store": {
+        "id": "S54",
+        "lat": 17.505,
+        "lng": 78.465
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 3,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O62",
+      "store": {
+        "id": "S62",
+        "lat": 17.465,
+        "lng": 78.585
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 5,
+      "quantity": 1,
+      "date": "2025-12-19"
+    },
+    {
+      "id": "O32",
+      "store": {
+        "id": "S32",
+        "lat": 17.385,
+        "lng": 78.448
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 4,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O75",
+      "store": {
+        "id": "S75",
+        "lat": 17.4,
+        "lng": 78.51
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.4,
+      "day": 6,
+      "quantity": 1,
+      "date": "2025-12-20"
+    },
+    {
+      "id": "O6",
+      "store": {
+        "id": "S6",
+        "lat": 17.48,
+        "lng": 78.4
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "quantity": 3,
+      "day": 1,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O11",
+      "store": {
+        "id": "S11",
+        "lat": 17.52,
+        "lng": 78.38
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 1,
+      "quantity": 4,
+      "date": "2025-12-15"
+    },
+    {
+      "id": "O16",
+      "store": {
+        "id": "S16",
+        "lat": 17.51,
+        "lng": 78.43
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 2,
+      "date": "2025-12-16"
+    },
+    {
+      "id": "O37",
+      "store": {
+        "id": "S37",
+        "lat": 17.355,
+        "lng": 78.515
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 3,
+      "quantity": 3,
+      "date": "2025-12-17"
+    },
+    {
+      "id": "O58",
+      "store": {
+        "id": "S58",
+        "lat": 17.485,
+        "lng": 78.525
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.5,
+      "day": 4,
+      "quantity": 4,
+      "date": "2025-12-18"
+    },
+    {
+      "id": "O18",
+      "store": {
+        "id": "S18",
+        "lat": 17.485,
+        "lng": 78.452
+      },
+      "warehouse_candidates": [
+        "WH1",
+        "WH2"
+      ],
+      "priority": 0.6,
+      "day": 2,
+      "quantity": 2,
+      "date": "2025-12-16"
     }
-  ]
+  ],
+  "metadata": {
+    "total_orders": 100,
+    "days": 7,
+    "orders_per_day": {
+      "Day 1": 15,
+      "Day 2": 15,
+      "Day 3": 14,
+      "Day 4": 14,
+      "Day 5": 14,
+      "Day 6": 14,
+      "Day 7": 14
+    },
+    "base_date": "2025-12-15",
+    "date_range": {
+      "start": "2025-12-15",
+      "end": "2025-12-21"
+    }
+  }
 }

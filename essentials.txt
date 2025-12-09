@@ -1,0 +1,4 @@
+The parameters for warehouses and orders:
+Shift timings and max trips
+order priority
+the max date before which the order must be delivered

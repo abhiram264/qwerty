@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import RouteMap from './RouteMap';
 import FilterPanel from './FilterPanel';
 import StatsPanel from './StatsPanel';
@@ -8,7 +9,8 @@ import './App.css';
 function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const data = location.state?.data;
+  const [data, setData] = useState(location.state?.data);
+  const [simulating, setSimulating] = useState(false);
 
   // Filter states
   const [selectedWarehouses, setSelectedWarehouses] = useState(
@@ -56,6 +58,50 @@ function ResultsPage() {
     });
   }, [data, selectedWarehouses, selectedReps]);
 
+  // Calculate next day's date
+  const getNextDay = (currentDate) => {
+    const date = new Date(currentDate);
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().split('T')[0];
+  };
+
+  // Calculate current day number from service_date for display
+  const getCurrentDay = () => {
+    if (data?.day) return data.day;
+    // Calculate day of week (1 = Monday, 7 = Sunday)
+    const date = new Date(data.service_date);
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    return dayOfWeek === 0 ? 7 : dayOfWeek; // Convert to 1-7 format
+  };
+
+  // Simulate next day's delivery
+  const handleSimulateNextDay = async () => {
+    if (!data || simulating) return;
+    
+    setSimulating(true);
+    try {
+      // Simply increment the date - the backend will filter orders by date
+      const nextDate = getNextDay(data.service_date);
+      
+      const response = await axios.post('http://localhost:5000/api/calculate-routes', {
+        service_date: nextDate
+      });
+      
+      // Update data with new day's results
+      setData(response.data);
+      
+      // Reset filters to show all
+      setSelectedWarehouses(response.data.warehouses?.map(w => w.id) || []);
+      setSelectedReps([...new Set(response.data.trips.map(t => t.rep_id))] || []);
+      setSelectedTrips(response.data.trips?.map(t => `${t.rep_id}-${t.trip_index_for_rep}`) || []);
+    } catch (err) {
+      console.error('Error simulating next day:', err);
+      alert(err.response?.data?.error || 'Failed to simulate next day');
+    } finally {
+      setSimulating(false);
+    }
+  };
+
   if (!data) {
     return (
       <div className="error-container">
@@ -78,9 +124,36 @@ function ResultsPage() {
         <div className="header-content">
           <div className="header-title">
             <h1>Delivery Route Planner</h1>
-            <p className="header-subtitle">AI-Optimized Logistics for {data.service_date}</p>
+            <p className="header-subtitle">
+              AI-Optimized Logistics for {data.service_date}
+              {data.day && (
+                <span className="day-badge"> • Day {data.day} {
+                  ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][data.day - 1]
+                }</span>
+              )}
+            </p>
           </div>
           <div className="header-actions">
+            <button
+              className="btn-simulate"
+              onClick={handleSimulateNextDay}
+              disabled={simulating}
+              title="Simulate next day's delivery with spillover orders"
+            >
+              {simulating ? (
+                <>
+                  <div className="spinner-small"></div>
+                  Simulating...
+                </>
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                  Simulate Next Day
+                </>
+              )}
+            </button>
             <Link to="/" className="btn-secondary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
