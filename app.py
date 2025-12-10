@@ -16,6 +16,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Tuple, Optional, Set
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import pickle
+import hashlib
+
 
 import requests
 from flask import Flask, jsonify, request
@@ -249,6 +252,36 @@ def split_large_orders(orders: List[Order]) -> List[Order]:
     
     return split_orders
 
+
+CACHE_FILE = os.path.join(UPLOAD_FOLDER, "matrix_cache.pkl")
+
+def load_matrix_cache():
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "rb") as f:
+                return pickle.load(f)
+        except:
+            return {}   # corrupted cache
+    return {}
+
+def save_matrix_cache(cache):
+    with open(CACHE_FILE, "wb") as f:
+        pickle.dump(cache, f)
+
+def hash_locations(locations):
+    """
+    Hash locations so cache is reused only if warehouse/order coords are same.
+    Prevents using old cache for different dataset.
+    """
+    m = hashlib.md5()
+    for lat, lng in locations:
+        m.update(f"{lat:.6f},{lng:.6f}".encode())
+    return m.hexdigest()
+
+
+
+
+
 # Build data model for OR-Tools with priority penalties for unserved orders and capacity constraints for each vehicle (trip).
 def build_data_model_ortools(
     warehouses: List[Warehouse], reps: List[Rep], orders: List[Order]
@@ -275,89 +308,104 @@ def build_data_model_ortools(
         locations.append((o.store.lat, o.store.lng))
 
     num_locations = len(locations)
-    
-    # 2. Distance Matrix for OR-Tools using Geoapify Route Matrix (real-road distances)
-    # We call the matrix API ONCE for all locations to avoid N^2 per-leg calls.
-    distance_matrix: List[List[int]] = [[0] * num_locations for _ in range(num_locations)]
-    try:
-        # Geoapify Route Matrix has a hard limit of 1000 elements per call.
-        # We chunk the global matrix into smaller source/target blocks so that
-        # (len(sources_block) * len(targets_block)) <= 1000.
-        max_block_size = 31  # 31 * 31 = 961 < 1000
-        print(f"Requesting Geoapify route matrix for {num_locations} locations in blocks...")
 
-        for src_start in range(0, num_locations, max_block_size):
-            src_end = min(num_locations, src_start + max_block_size)
-            src_indices = list(range(src_start, src_end))
+    # ---------- CACHE LOAD HERE ----------
+    matrix_cache = load_matrix_cache()
+    cache_key = hash_locations(locations)
 
-            for tgt_start in range(0, num_locations, max_block_size):
-                tgt_end = min(num_locations, tgt_start + max_block_size)
-                tgt_indices = list(range(tgt_start, tgt_end))
+    if cache_key in matrix_cache:
+        print("⚡ Using cached matrix – no Geoapify calls.")
+        distance_matrix = matrix_cache[cache_key]
+    else:
+        print("🚀 Cache not found – calling Geoapify first time.")
+        
+        # 2. Distance Matrix for OR-Tools using Geoapify Route Matrix (real-road distances)
+        # We call the matrix API ONCE for all locations to avoid N^2 per-leg calls.
+        distance_matrix: List[List[int]] = [[0] * num_locations for _ in range(num_locations)]
+        try:
+            # Geoapify Route Matrix has a hard limit of 1000 elements per call.
+            # We chunk the global matrix into smaller source/target blocks so that
+            # (len(sources_block) * len(targets_block)) <= 1000.
+            max_block_size = 31  # 31 * 31 = 961 < 1000
+            print(f"Requesting Geoapify route matrix for {num_locations} locations in blocks...")
 
-                # Build sources/targets for this block
-                sources_block = [
-                    {"location": [locations[i][1], locations[i][0]]}  # [lon, lat]
-                    for i in src_indices
-                ]
-                targets_block = [
-                    {"location": [locations[j][1], locations[j][0]]}  # [lon, lat]
-                    for j in tgt_indices
-                ]
+            for src_start in range(0, num_locations, max_block_size):
+                src_end = min(num_locations, src_start + max_block_size)
+                src_indices = list(range(src_start, src_end))
 
-                matrix_body = {
-                    "mode": "drive",
-                    "sources": sources_block,
-                    "targets": targets_block,
-                }
+                for tgt_start in range(0, num_locations, max_block_size):
+                    tgt_end = min(num_locations, tgt_start + max_block_size)
+                    tgt_indices = list(range(tgt_start, tgt_end))
 
-                resp = requests.post(
-                    GEOAPIFY_ROUTEMATRIX_URL + f"?apiKey={GEOAPIFY_API_KEY}",
-                    headers={"Content-Type": "application/json"},
-                    data=json.dumps(matrix_body),
-                    timeout=60,
-                )
-                if not resp.ok:
-                    print(f"Geoapify route matrix error {resp.status_code}: {resp.text}")
-                    resp.raise_for_status()
+                    # Build sources/targets for this block
+                    sources_block = [
+                        {"location": [locations[i][1], locations[i][0]]}  # [lon, lat]
+                        for i in src_indices
+                    ]
+                    targets_block = [
+                        {"location": [locations[j][1], locations[j][0]]}  # [lon, lat]
+                        for j in tgt_indices
+                    ]
 
-                matrix_data = resp.json()
-                sources_to_targets = matrix_data.get("sources_to_targets") or []
+                    matrix_body = {
+                        "mode": "drive",
+                        "sources": sources_block,
+                        "targets": targets_block,
+                    }
 
-                if len(sources_to_targets) != len(src_indices):
-                    raise ValueError("Route matrix block size mismatch from Geoapify (sources).")
+                    resp = requests.post(
+                        GEOAPIFY_ROUTEMATRIX_URL + f"?apiKey={GEOAPIFY_API_KEY}",
+                        headers={"Content-Type": "application/json"},
+                        data=json.dumps(matrix_body),
+                        timeout=60,
+                    )
+                    if not resp.ok:
+                        print(f"Geoapify route matrix error {resp.status_code}: {resp.text}")
+                        resp.raise_for_status()
 
-                # Fill the corresponding block in the global distance matrix
-                for local_i, i in enumerate(src_indices):
-                    row = sources_to_targets[local_i]
-                    if len(row) != len(tgt_indices):
-                        raise ValueError("Route matrix block size mismatch from Geoapify (targets).")
-                    for local_j, j in enumerate(tgt_indices):
-                        if i == j:
-                            continue
-                        cell = row[local_j] or {}
-                        dist_meters = cell.get("distance", 0)
-                        if dist_meters and dist_meters > 0:
-                            distance_matrix[i][j] = int(round(dist_meters))
-                        else:
-                            # Fallback to Haversine for this cell if distance missing/zero
-                            lat_i, lng_i = locations[i]
-                            lat_j, lng_j = locations[j]
-                            km = haversine_km(lat_i, lng_i, lat_j, lng_j)
-                            distance_matrix[i][j] = int(round(km * 1000))
+                    matrix_data = resp.json()
+                    sources_to_targets = matrix_data.get("sources_to_targets") or []
 
-        print("Geoapify route matrix (chunked) loaded successfully for OR-Tools.")
+                    if len(sources_to_targets) != len(src_indices):
+                        raise ValueError("Route matrix block size mismatch from Geoapify (sources).")
 
-    except Exception as e:
-        # If anything goes wrong with the matrix API, fall back to Haversine
-        print(f"Warning: Geoapify route matrix failed ({e}), falling back to Haversine distances.")
-        for i in range(num_locations):
-            lat_i, lng_i = locations[i]
-            for j in range(num_locations):
-                if i == j:
-                    continue
-                lat_j, lng_j = locations[j]
-                km = haversine_km(lat_i, lng_i, lat_j, lng_j)
-                distance_matrix[i][j] = int(round(km * 1000))
+                    # Fill the corresponding block in the global distance matrix
+                    for local_i, i in enumerate(src_indices):
+                        row = sources_to_targets[local_i]
+                        if len(row) != len(tgt_indices):
+                            raise ValueError("Route matrix block size mismatch from Geoapify (targets).")
+                        for local_j, j in enumerate(tgt_indices):
+                            if i == j:
+                                continue
+                            cell = row[local_j] or {}
+                            dist_meters = cell.get("distance", 0)
+                            if dist_meters and dist_meters > 0:
+                                distance_matrix[i][j] = int(round(dist_meters))
+                            else:
+                                # Fallback to Haversine for this cell if distance missing/zero
+                                lat_i, lng_i = locations[i]
+                                lat_j, lng_j = locations[j]
+                                km = haversine_km(lat_i, lng_i, lat_j, lng_j)
+                                distance_matrix[i][j] = int(round(km * 1000))
+
+            print("Geoapify route matrix (chunked) loaded successfully for OR-Tools.")
+
+            # ---------- SAVE CACHE HERE ----------
+            matrix_cache[cache_key] = distance_matrix
+            save_matrix_cache(matrix_cache)
+            print("💾 Matrix cached for future runs.")
+
+        except Exception as e:
+            # If anything goes wrong with the matrix API, fall back to Haversine
+            print(f"Warning: Geoapify route matrix failed ({e}), falling back to Haversine distances.")
+            for i in range(num_locations):
+                lat_i, lng_i = locations[i]
+                for j in range(num_locations):
+                    if i == j:
+                        continue
+                    lat_j, lng_j = locations[j]
+                    km = haversine_km(lat_i, lng_i, lat_j, lng_j)
+                    distance_matrix[i][j] = int(round(km * 1000))
 
     # 3. Vehicles - Create one vehicle per rep for their 8-hour shift
     vehicles_meta: List[Dict[str, Any]] = []
@@ -431,6 +479,8 @@ def solve_vrp_ortools(data: Dict[str, Any]) -> Tuple[pywrapcp.RoutingModel, pywr
 
     # 1. Distance/Cost dimension
     distance_matrix = data["distance_matrix"]
+
+
     def distance_callback(from_index: int, to_index: int) -> int:
         return distance_matrix[manager.IndexToNode(from_index)][manager.IndexToNode(to_index)]
 
