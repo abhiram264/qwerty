@@ -109,7 +109,7 @@ class DataStore:
                     rep_dict = {
                         'id': d['id'],
                         'warehouse_id': d['warehouse_id'],
-                        'max_trips_per_day': d.get('max_trips_per_day', 4),  # Keep for backward compat
+                        'max_trips_per_day': d.get('max_trips_per_day', 2),  # Keep for backward compat
                         'shift_start_time': d.get('shift_start_time', '09:00'),
                         'max_hours_per_day': d.get('max_hours_per_day', 8)
                     }
@@ -771,15 +771,14 @@ def plan_routes_daily(
             # Check if order has date field matching service_date
             if hasattr(o, 'date') and getattr(o, 'date', None) == service_date:
                 date_orders.append(o)
-            # Fallback: if no date field but has day, calculate date from day
-            elif hasattr(o, 'day') and not hasattr(o, 'date'):
-                # This is for backward compatibility - we'll include it if day matches
-                # But ideally all orders should have date field
-                pass
+            # Fallback: if no date field but has day, we skip it (date-based filtering is preferred)
+            # Orders without date field that have day will be ignored when filtering by date
         
         # Combine date-matched orders with carryovers
         orders = date_orders + carryover_orders
-        print(f"Filtering for date {service_date}: {len(date_orders)} new orders + {len(carryover_orders)} carryover orders = {len(orders)} total")
+        print(f"📅 Filtering for date {service_date}: {len(date_orders)} date-matched orders + {len(carryover_orders)} carryover orders = {len(orders)} total")
+        if len(date_orders) == 0 and len(new_orders) > 0:
+            print(f"⚠️  Warning: No orders found with date={service_date}. Make sure orders have 'date' field matching the service_date.")
     elif target_day is not None:
         # Fallback to day-based filtering for backward compatibility
         day_orders = [o for o in new_orders if getattr(o, 'day', None) == target_day]
@@ -862,16 +861,25 @@ def plan_routes_daily(
     ]
 
     result: Dict[str, Any] = {
-        "service_date": service_date,
-        "day": target_day,  # Include day in response
-        "warehouses": [wh.__dict__ for wh in warehouses],
-        "orders": [o.__dict__ for o in final_served_orders],
-        "trips": res_trips,
-        "geo_routes": geo_routes,
-        "total_distance_km": round(total_dist_km, 2),
-        "optimization_stats": optimization_stats,
-        "carried_over_orders": res_carried_over,
-        "next_day_orders_count": len(next_day_orders)
+    "service_date": service_date,
+    "day": target_day,
+    "warehouses": [wh.__dict__ for wh in warehouses],
+    "served_orders": [o.__dict__ for o in final_served_orders],   # renamed for clarity
+    "carried_over_orders": res_carried_over,
+
+    # 🔥 Add these:
+    "total_orders_today": len(served_orders) + len(carried_over_orders),
+    "served_orders_count": len(final_served_orders),
+    "spillover_count": len(carried_over_orders),
+    "delivery_success_rate": round(
+        len(final_served_orders) / max(1, (len(final_served_orders) + len(carried_over_orders))) * 100, 2
+    ),
+    
+    "trips": res_trips,
+    "geo_routes": geo_routes,
+    "total_distance_km": round(total_dist_km, 2),
+    "optimization_stats": optimization_stats,
+    "next_day_orders_count": len(next_day_orders)
     }
 
     return result, total_dist_km
@@ -925,19 +933,37 @@ def upload_orders():
             return jsonify({"error": "Missing 'orders' key"}), 400
 
         # Create Order objects from raw data to normalize priority/quantity
-        initial_orders = [
-            Order(
+        # Preserve date and day fields from input JSON
+        initial_orders = []
+        orders_with_date = 0
+        orders_with_day = 0
+        for d in data['orders']:
+            order = Order(
                 id=d['id'],
                 store=Store(**d['store']),
                 warehouse_candidates=d['warehouse_candidates'],
                 priority=float(d.get('priority', 0.5)),
                 quantity=int(d.get('quantity', 1))
-            ) for d in data['orders']
-        ]
+            )
+            # Preserve date and day fields if they exist in the input
+            if 'date' in d:
+                order.date = d['date']
+                orders_with_date += 1
+            if 'day' in d:
+                order.day = d['day']
+                orders_with_day += 1
+            initial_orders.append(order)
         
         data_store.save_orders(initial_orders)
         
-        return jsonify({"message": "Orders uploaded successfully", "orders_count": len(initial_orders)})
+        print(f"✅ Uploaded {len(initial_orders)} orders: {orders_with_date} with date field, {orders_with_day} with day field")
+        
+        return jsonify({
+            "message": "Orders uploaded successfully", 
+            "orders_count": len(initial_orders),
+            "orders_with_date": orders_with_date,
+            "orders_with_day": orders_with_day
+        })
     except Exception as e:
         return jsonify({"error": f"Error processing orders: {e}"}), 500
 

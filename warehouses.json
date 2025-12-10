@@ -15,22 +15,12 @@
     {
       "id": "WH1-R1",
       "warehouse_id": "WH1",
-      "max_trips_per_day": 4
-    },
-    {
-      "id": "WH1-R2",
-      "warehouse_id": "WH1",
-      "max_trips_per_day": 4
+      "max_trips_per_day": 2
     },
     {
       "id": "WH2-R1",
       "warehouse_id": "WH2",
-      "max_trips_per_day": 4
-    },
-    {
-      "id": "WH2-R2",
-      "warehouse_id": "WH2",
-      "max_trips_per_day": 4
+      "max_trips_per_day": 2
     }
   ]
 }
