@@ -195,7 +195,7 @@ function ResultsPage() {
           <div className="map-wrapper">
             <RouteMap
               warehouses={data.warehouses}
-              orders={data.orders}
+              orders={data.served_orders}
               trips={filteredTrips}
               geoRoutes={data.geo_routes}
             />

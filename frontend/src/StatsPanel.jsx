@@ -5,15 +5,27 @@ import './StatsPanel.css';
 
 
 const StatsPanel = ({ data, filteredTrips }) => {
-    // Base collections
-    const allTrips = data.trips;
+    // Early return if data is not available
+    if (!data) {
+        return (
+            <div className="stats-panel">
+                <div className="stats-header">
+                    <h3>Statistics</h3>
+                </div>
+                <p>No data available</p>
+            </div>
+        );
+    }
+
+    // Base collections with defensive checks
+    const allTrips = data.trips || [];
     const totalTripsAll = allTrips.length;
-    const tripsForStats = filteredTrips;
+    const tripsForStats = filteredTrips || [];
     const visibleTrips = tripsForStats.length;
     const isFiltered = visibleTrips > 0 && visibleTrips < totalTripsAll;
 
-    const totalDistanceAll = data.total_distance_km;
-    const optimizationScore = data.optimization_score ?? null;
+    const totalDistanceAll = data.total_distance_km || 0;
+    const optimizationScore = data.optimization_stats?.optimization_score ?? null;
     const carriedOverOrders = data.carried_over_orders || [];
     const carriedOverCount = carriedOverOrders.length;
 
@@ -28,7 +40,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
             };
         }
         warehouseStats[trip.warehouse_id].trips++;
-        warehouseStats[trip.warehouse_id].stops += trip.stops.length;
+        warehouseStats[trip.warehouse_id].stops += (trip.stops || []).length;
     });
 
     // Group by rep (filtered)
@@ -38,23 +50,29 @@ const StatsPanel = ({ data, filteredTrips }) => {
             repStats[trip.rep_id] = { trips: 0, orders: 0 };
         }
         repStats[trip.rep_id].trips++;
-        repStats[trip.rep_id].orders += trip.stops.length;
+        repStats[trip.rep_id].orders += (trip.stops || []).length;
     });
 
     const totalRepsAll = new Set(allTrips.map(t => t.rep_id)).size;
     const visibleReps = Object.keys(repStats).length;
 
     // Orders covered by filtered trips
-    const allOrdersCount = data.orders.length;
+    // Use total_orders_today from backend (includes served + carried_over) for accurate total
+    const allOrdersCount = data.total_orders_today || (data.served_orders || []).length || 0;
     const ordersCoveredSet = new Set();
     tripsForStats.forEach(trip => {
-        trip.stops.forEach(stop => ordersCoveredSet.add(stop.order_id));
+        (trip.stops || []).forEach(stop => ordersCoveredSet.add(stop.order_id));
     });
     const visibleOrders = ordersCoveredSet.size;
+    
+    // Get served and spillover counts from backend if available
+    const servedOrdersCount = data.served_orders_count ?? visibleOrders;
+    const spilloverCount = data.spillover_count ?? carriedOverCount;
+    const deliverySuccessRate = data.delivery_success_rate ?? null;
 
     // Map order -> store for PDF export
     const orderIdToStore = {};
-    data.orders.forEach(order => {
+    (data.served_orders || []).forEach(order => {
         orderIdToStore[order.id] = order.store;
     });
 
@@ -65,8 +83,8 @@ const StatsPanel = ({ data, filteredTrips }) => {
     // Find earliest start and latest end
     const startTimes = tripsForStats.map(t => t.start_time ? new Date(t.start_time) : null).filter(Boolean);
     const endTimes = tripsForStats.map(t => t.end_time ? new Date(t.end_time) : null).filter(Boolean);
-    const earliestStart = startTimes.length > 0 ? new Date(Math.min(...startTimes)) : null;
-    const latestEnd = endTimes.length > 0 ? new Date(Math.max(...endTimes)) : null;
+    const earliestStart = startTimes.length > 0 ? new Date(Math.min(...startTimes.map(d => d.getTime()))) : null;
+    const latestEnd = endTimes.length > 0 ? new Date(Math.max(...endTimes.map(d => d.getTime()))) : null;
 
     // Calculate utilization
     const totalCapacity = visibleTrips * 5; // 5 orders per trip
@@ -137,9 +155,9 @@ const StatsPanel = ({ data, filteredTrips }) => {
                 color: [249, 115, 22] // Orange
             },
             {
-                label: 'Orders Covered',
+                label: 'Orders Served',
                 value: visibleOrders.toString(),
-                subValue: `of ${allOrdersCount}`,
+                subValue: spilloverCount > 0 ? `${allOrdersCount} total (${spilloverCount} spillover)` : `of ${allOrdersCount}`,
                 icon: 'pin',
                 color: [139, 92, 246] // Purple
             },
@@ -277,7 +295,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
         doc.setTextColor(71, 85, 105);
-        doc.text(`Service Date: ${data.service_date}`, marginLeft + 5, currentY + 12);
+        doc.text(`Service Date: ${data.service_date || 'N/A'}`, marginLeft + 5, currentY + 12);
         doc.text(`Generated: ${new Date().toLocaleString()}`, pageWidth - marginRight - 50, currentY + 12);
 
         currentY += 25;
@@ -285,6 +303,14 @@ const StatsPanel = ({ data, filteredTrips }) => {
         // ============ SUMMARY STATISTICS TABLE ============
         const summaryRows = [
             ['Metric', 'Value'],
+            ['Total Orders Today', `${allOrdersCount}`],
+            ['Orders Served', `${visibleOrders}`],
+            ...(spilloverCount > 0
+                ? [['Spillover Orders', `${spilloverCount} (carried to next day)`]]
+                : []),
+            ...(deliverySuccessRate !== null
+                ? [['Delivery Success Rate', `${deliverySuccessRate.toFixed(1)}%`]]
+                : []),
             ['Total Delivery Time', `${(totalDuration / 60).toFixed(1)} hours`],
             ['Average Trip Duration', `${avgDuration.toFixed(0)} minutes`],
             ['Fleet Utilization', `${utilizationPercent}%`],
@@ -292,9 +318,6 @@ const StatsPanel = ({ data, filteredTrips }) => {
             ['Operation Window', `${earliestStart ? earliestStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - ${latestEnd ? latestEnd.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`],
             ...(optimizationScore !== null
                 ? [['Optimization Score', `${optimizationScore.toFixed(1)}% (OR-Tools)`]]
-                : []),
-            ...(carriedOverCount > 0
-                ? [['Carried Over Orders', `${carriedOverCount} (next-day capacity)`]]
                 : []),
         ];
 
@@ -427,7 +450,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
                 trip.warehouse_id,
                 trip.rep_id,
                 trip.trip_index_for_rep,
-                trip.stops.length,
+                (trip.stops || []).length,
                 start,
                 end,
                 trip.duration_minutes ? `${Math.round(trip.duration_minutes)}` : '0'
@@ -471,7 +494,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
 
         // ============ TRIP DETAILS (MULTI-PAGE) ============
         tripsForStats.forEach((trip, tripIdx) => {
-            const stops = trip.stops;
+            const stops = trip.stops || [];
             const neededHeight = 20 + (stops.length * 8);
 
             if (currentY + neededHeight > pageHeight - marginBottom) {
@@ -559,20 +582,20 @@ const StatsPanel = ({ data, filteredTrips }) => {
             { align: 'center' }
         );
 
-        doc.save(`delivery-routes-${data.service_date}.pdf`);
+        doc.save(`delivery-routes-${data.service_date || 'report'}.pdf`);
     };
 
     const handleDownloadJson = () => {
         const payload = {
-            service_date: data.service_date,
-            warehouses: data.warehouses,
-            orders: data.orders,
+            service_date: data.service_date || null,
+            warehouses: data.warehouses || [],
+            orders: data.served_orders || [],
             trips: tripsForStats,
             geo_routes: filteredGeoRoutes,
             optimization_score: optimizationScore,
-            optimality_gap: data.optimality_gap ?? null,
-            objective_value: data.objective_value ?? null,
-            best_objective_bound: data.best_objective_bound ?? null,
+            optimality_gap: data.optimization_stats?.optimality_gap ?? null,
+            objective_value: data.optimization_stats?.objective_value ?? null,
+            best_objective_bound: data.optimization_stats?.best_objective_bound ?? null,
             carried_over_orders: carriedOverOrders,
         };
 
@@ -581,7 +604,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');
         anchor.href = url;
-        anchor.download = `delivery-routes-${data.service_date}.json`;
+        anchor.download = `delivery-routes-${data.service_date || 'report'}.json`;
         document.body.appendChild(anchor);
         anchor.click();
         document.body.removeChild(anchor);
@@ -593,7 +616,7 @@ const StatsPanel = ({ data, filteredTrips }) => {
             <div className="stats-header">
                 <div className="stats-header-left">
                     <h3>Statistics</h3>
-                    <span className="stats-badge">{data.service_date}</span>
+                    {data.service_date && <span className="stats-badge">{data.service_date}</span>}
                 </div>
                 <div className="stats-export-group">
                     <button className="stats-export-btn" type="button" onClick={handleExportPdf}>
@@ -680,9 +703,32 @@ const StatsPanel = ({ data, filteredTrips }) => {
                             {visibleOrders}
                             <span className="stat-value-sub">/{allOrdersCount}</span>
                         </div>
-                        <div className="stat-label">Orders Covered</div>
+                        <div className="stat-label">
+                            Orders Served
+                            {spilloverCount > 0 && (
+                                <span style={{ fontSize: '0.75rem', color: '#ef4444', marginLeft: '4px' }}>
+                                    ({spilloverCount} spillover)
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
+
+                {spilloverCount > 0 && (
+                    <div className="stat-card" style={{ border: '2px solid #ef4444' }}>
+                        <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div className="stat-content">
+                            <div className="stat-value">
+                                {spilloverCount}
+                            </div>
+                            <div className="stat-label">Spillover Orders (Next Day)</div>
+                        </div>
+                    </div>
+                )}
 
                 {optimizationScore !== null && (
                     <div className="stat-card">
@@ -748,6 +794,14 @@ const StatsPanel = ({ data, filteredTrips }) => {
                         </span>
                     </div>
                 </div>
+                {deliverySuccessRate !== null && (
+                    <div className="stat-row">
+                        <div className="stat-row-label">Delivery Success Rate</div>
+                        <div className="stat-row-values">
+                            <span className="stat-pill">{deliverySuccessRate.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                )}
                 {carriedOverCount > 0 && (
                     <div className="stat-row">
                         <div className="stat-row-label">Carried Over Orders</div>
